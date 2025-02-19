@@ -6,7 +6,7 @@ using Ambev.DeveloperEvaluation.Domain.Validation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
-/// <summary>
+/// <summary> /
 /// Represents a sale transaction in the system.
 /// This entity follows domain-driven design principles and includes business rules validation.
 /// </summary>
