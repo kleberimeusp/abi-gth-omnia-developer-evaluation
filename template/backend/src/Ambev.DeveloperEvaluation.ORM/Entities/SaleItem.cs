@@ -8,12 +8,15 @@ namespace Ambev.DeveloperEvaluation.ORM.Entities
     public class SaleItem
     {
         [Key]
-        public int Id { get; set; }
-        public int SaleId { get; set; }
-        [ForeignKey("SaleId")]
-        public Sale Sale { get; set; }
+        public Guid Id { get; set; }
+
+        [Required]
         public string ProductName { get; set; }
+
         private int _quantity;
+
+        [Required]
+        [Range(1, 20, ErrorMessage = "Maximum limit is 20 items per product.")]
         public int Quantity
         {
             get => _quantity;
@@ -25,8 +28,13 @@ namespace Ambev.DeveloperEvaluation.ORM.Entities
                 ApplyDiscount();
             }
         }
+
+        [Required]
         public decimal UnitPrice { get; set; }
+
         public decimal Discount { get; private set; }
+
+        [Required]
         public decimal TotalPrice { get; set; }
 
         [NotMapped]
@@ -36,11 +44,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Entities
 
         public void OnItemCancelled()
         {
-            if (Sale != null)
-            {
-                var logger = (ILogger<SaleItem>)Sale.GetType().GetProperty("_logger")?.GetValue(Sale);
-                logger?.LogInformation($"Item Cancelled: {ProductName} in Sale {Sale.SaleNumber}");
-            }
             ItemCancelled?.Invoke(this);
         }
 
