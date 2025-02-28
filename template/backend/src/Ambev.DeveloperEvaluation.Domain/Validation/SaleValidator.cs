@@ -20,7 +20,7 @@ public class SaleValidator : AbstractValidator<Sale>
         RuleFor(sale => sale.TotalAmount)
             .GreaterThanOrEqualTo(0).WithMessage("Total amount must be a positive value.");
 
-        RuleFor(sale => sale.Date)
+        RuleFor(sale => sale.SaleDate)
             .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Sale date cannot be in the future.");
 
         RuleFor(sale => sale.Items)

@@ -6,72 +6,73 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ambev.DeveloperEvaluation.ORM.Repositories;
-
-/// <summary>
-/// Implementation of ISaleRepository using Entity Framework Core
-/// </summary>
-public class SaleRepository : ISaleRepository
+namespace Ambev.DeveloperEvaluation.ORM.Repositories
 {
-    private readonly DefaultContext _context;
-
-    /// <summary>
-    /// Initializes a new instance of SaleRepository
-    /// </summary>
-    /// <param name="context">The database context</param>
-    public SaleRepository(DefaultContext context)
+    public class SaleRepository : ISaleRepository
     {
-        _context = context;
-    }
+        private readonly DefaultContext _context;
 
-    /// <summary>
-    /// Creates a new sale in the database
-    /// </summary>
-    /// <param name="sale">The sale to create</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The created sale</returns>
-    public async Task<Sale> CreateAsync(Sale sale, CancellationToken cancellationToken = default)
-    {
-        await _context.Sales.AddAsync(sale, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-        return sale;
-    }
+        public SaleRepository(DefaultContext context)
+        {
+            _context = context;
+        }
 
-    /// <summary>
-    /// Retrieves a sale by its unique identifier
-    /// </summary>
-    /// <param name="id">The unique identifier of the sale</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The sale if found, null otherwise</returns>
-    public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await _context.Sales.Include(s => s.Items).FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
-    }
+        /// <summary>
+        /// Cria uma nova venda e salva no banco de dados
+        /// </summary>
+        public async Task<Sale> CreateAsync(Sale sale, CancellationToken cancellationToken = default)
+        {
+            await _context.Sales.AddAsync(sale, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            return sale;
+        }
 
-    /// <summary>
-    /// Retrieves all sales
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>List of all sales</returns>
-    public async Task<IEnumerable<Sale>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.Sales.Include(s => s.Items).ToListAsync(cancellationToken);
-    }
+        /// <summary>
+        /// Obtém uma venda pelo ID
+        /// </summary>
+        public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Sales
+                .Include(s => s.Items)
+                .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+        }
 
-    /// <summary>
-    /// Deletes a sale from the database
-    /// </summary>
-    /// <param name="id">The unique identifier of the sale to delete</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the sale was deleted, false if not found</returns>
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        var sale = await GetByIdAsync(id, cancellationToken);
-        if (sale == null)
-            return false;
+        /// <summary>
+        /// Obtém todas as vendas
+        /// </summary>
+        public async Task<IReadOnlyList<Sale>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.Sales
+                .Include(s => s.Items)
+                .ToListAsync(cancellationToken);
+        }
 
-        _context.Sales.Remove(sale);
-        await _context.SaveChangesAsync(cancellationToken);
-        return true;
+        /// <summary>
+        /// Atualiza uma venda existente
+        /// </summary>
+        public async Task<Sale?> UpdateAsync(Sale sale, CancellationToken cancellationToken = default)
+        {
+            var existingSale = await _context.Sales.FindAsync(new object[] { sale.Id }, cancellationToken);
+            if (existingSale == null)
+                return null;
+
+            _context.Entry(existingSale).CurrentValues.SetValues(sale);
+            await _context.SaveChangesAsync(cancellationToken);
+            return existingSale;
+        }
+
+        /// <summary>
+        /// Deleta uma venda pelo ID
+        /// </summary>
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var sale = await GetByIdAsync(id, cancellationToken);
+            if (sale == null)
+                return false;
+
+            _context.Sales.Remove(sale);
+            await _context.SaveChangesAsync(cancellationToken);
+            return true;
+        }
     }
 }

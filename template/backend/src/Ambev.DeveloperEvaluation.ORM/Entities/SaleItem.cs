@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Ambev.DeveloperEvaluation.Domain.BusinessRules;
-using Microsoft.Extensions.Logging;
 
 namespace Ambev.DeveloperEvaluation.ORM.Entities
 {
@@ -49,7 +48,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Entities
 
         private void ApplyDiscount()
         {
-            Discount = BusinessRules.CalculateDiscount(Quantity, UnitPrice);
+            Discount = SaleBusinessRules.CalculateDiscount(Quantity, UnitPrice);
         }
     }
 }
