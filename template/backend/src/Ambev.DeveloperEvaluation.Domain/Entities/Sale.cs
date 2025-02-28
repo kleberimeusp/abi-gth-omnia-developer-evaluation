@@ -11,9 +11,14 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 public class Sale : BaseEntity
 {
     /// <summary>
+    /// Gets the sale number (unique identifier for the transaction).
+    /// </summary>
+    public string SaleNumber { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets the sale date.
     /// </summary>
-    public DateTime Date { get; set; } 
+    public DateTime SaleDate { get; set; }
 
     /// <summary>
     /// Gets the customer associated with the sale.

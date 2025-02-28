@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Domain.Events
 {
@@ -10,5 +11,17 @@ namespace Ambev.DeveloperEvaluation.Domain.Events
         decimal TotalAmount,
         string Branch,
         bool IsCancelled
-    ) : INotification;
+    ) : INotification
+    {
+        public static SaleCreatedEvent FromSale(Sale sale) =>
+            new(
+                sale.Id,
+                sale.SaleNumber,
+                sale.SaleDate,
+                sale.Customer,
+                sale.TotalAmount,
+                sale.Branch,
+                sale.IsCancelled
+            );
+    }
 }
